@@ -7,6 +7,8 @@ import type {
     ScopedStorage,
     ProfileIdentifier,
     PersonaIdentifier,
+    NextIDBindings,
+    NextIDPlatform,
 } from '@masknet/shared-base'
 import type { Emitter } from '@servie/events'
 import type { Web3Plugin } from './web3-types'
@@ -74,6 +76,9 @@ export namespace Plugin.Shared {
         personaSign(payload: PersonaSignRequest): Promise<PersonaSignResult>
         /** Sign a message with wallet */
         walletSign(message: string, address: string): Promise<string>
+        nextID: {
+            query(platform: NextIDPlatform, identifier: string): Promise<NextIDBindings>
+        }
     }
     export interface Definition {
         /**

@@ -113,6 +113,9 @@ export async function activateSocialNetworkUIInner(ui_deferred: SocialNetworkUI.
                     undefined as PersonaIdentifier | undefined,
                     MaskMessages.events.currentPersonaIdentifier.on,
                 ),
+                nextID: {
+                    query: Services.NextID.queryExistedBinding,
+                },
             }
         }),
     )
