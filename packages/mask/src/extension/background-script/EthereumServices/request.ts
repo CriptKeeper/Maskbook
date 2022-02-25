@@ -2,24 +2,8 @@ import type { RequestArguments } from 'web3-core'
 import { isReadOnlyPayload, ProviderType, RequestOptions, SendOverrides } from '@masknet/web3-shared-evm'
 import { currentChainIdSettings, currentProviderSettings } from '../../../plugins/Wallet/settings'
 import { createExternalProvider } from './provider'
-import { createContext, dispatch, use } from './composer'
-import { Logger } from './middlewares/Logger'
-import { Squash } from './middlewares/Squash'
-import { Nonce } from './middlewares/Nonce'
-import { Interceptor } from './middlewares/Interceptor'
-import { Translator } from './middlewares/Translator'
-import { RecentTransaction } from './middlewares/Transaction'
-import { TransactionNotifier } from './middlewares/TransactionNotifier'
-import { TransactionWatcher } from './middlewares/TransactionWatcher'
-
-use(new Logger())
-use(new Squash())
-use(new Nonce())
-use(new Translator())
-use(new Interceptor())
-use(new RecentTransaction())
-use(new TransactionNotifier())
-use(new TransactionWatcher())
+import { createContext, dispatch } from './composer'
+import './middleware'
 
 export async function request<T extends unknown>(
     requestArguments: RequestArguments,
@@ -32,6 +16,7 @@ export async function request<T extends unknown>(
         const context = createContext(requestArguments, overrides, options)
 
         await dispatch(context, async () => {
+            if (!context.writeable) return
             try {
                 // create request provider
                 const externalProvider = await createExternalProvider(
@@ -46,6 +31,13 @@ export async function request<T extends unknown>(
             } catch (error) {
                 context.abort(error, 'Failed to send request.')
             }
+        })
+
+        console.log('DEBUG: request')
+        console.log({
+            method: context.method,
+            error: context.error,
+            result: context.result,
         })
 
         if (context.error) reject(context.error)

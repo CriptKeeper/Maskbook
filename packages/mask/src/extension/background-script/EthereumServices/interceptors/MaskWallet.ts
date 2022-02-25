@@ -30,7 +30,7 @@ export class MaskWallet implements Middleware<Context> {
 
                 if (!config?.from && !config?.to) {
                     context.abort(new Error('Invalid JSON payload.'))
-                    return
+                    break
                 }
 
                 try {
@@ -40,15 +40,14 @@ export class MaskWallet implements Middleware<Context> {
 
                     if (!signed.rawTransaction) {
                         context.abort(new Error('Failed to sign transaction.'))
-                        return
+                    } else {
+                        context.write(
+                            await this.provider.request({
+                                method: EthereumMethodType.ETH_SEND_RAW_TRANSACTION,
+                                params: [signed.rawTransaction],
+                            }),
+                        )
                     }
-
-                    context.write(
-                        await this.provider.request({
-                            method: EthereumMethodType.ETH_SEND_RAW_TRANSACTION,
-                            params: [signed.rawTransaction],
-                        }),
-                    )
                 } catch (error) {
                     context.abort(error, 'Failed to send transaction.')
                 }
@@ -78,7 +77,9 @@ export class MaskWallet implements Middleware<Context> {
                 }
                 break
             default:
-                await next()
+                break
         }
+
+        await next()
     }
 }

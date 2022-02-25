@@ -12,7 +12,7 @@ export class Popup implements Middleware<Context> {
                 const payload = await WalletRPC.topUnconfirmedRequest()
                 if (!payload) {
                     context.abort(new Error('No unconfirmed request.'))
-                    return
+                    break
                 }
                 await WalletRPC.deleteUnconfirmedRequest(payload)
                 await Services.Helper.removePopupWindow()
@@ -21,7 +21,6 @@ export class Popup implements Middleware<Context> {
                         method: payload.method,
                         params: payload.params,
                     }
-                    await next()
                 } else {
                     context.end()
                 }
@@ -35,9 +34,10 @@ export class Popup implements Middleware<Context> {
                     await WalletRPC.pushUnconfirmedRequest(context.request)
                     context.end()
                 } else {
-                    await next()
                 }
                 break
         }
+
+        await next()
     }
 }

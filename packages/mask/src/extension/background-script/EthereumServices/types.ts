@@ -42,6 +42,7 @@ export interface Context {
     readonly account: string
     readonly chainId: ChainId
     readonly requestId: number
+    readonly writeable: boolean
     readonly providerType: ProviderType
     readonly method: EthereumMethodType
     readonly config: EthereumTransactionConfig | undefined
@@ -65,22 +66,17 @@ export interface Context {
     /**
      * Resolve a request and write down the result into the context. Alias of end(error)
      */
-    abort: (error: unknown, fallback?: string) => void
+    write: (result: unknown) => void
 
     /**
      * Reject a request and throw an error. Alias of end(null, result)
      */
-    write: (result: unknown) => void
+    abort: (error: unknown, fallback?: string) => void
 
     /**
      * Seal a request by resolving or rejecting it.
      */
     end: (error?: Error | null, result?: unknown) => void
-
-    /**
-     * Register a callback which will be called once the context is written with a response.
-     */
-    onResponse: (callback: (error: Error | null, response?: JsonRpcResponse) => void) => void
 }
 
 export interface Middleware<T> {

@@ -221,11 +221,11 @@ export class TransactionWatcher implements Middleware<Context> {
                     ...context.requestArguments,
                     method: EthereumMethodType.ETH_GET_TRANSACTION_RECEIPT,
                 }
-                await next()
                 break
             default:
-                await next()
                 break
         }
+
+        await next()
     }
 }
