@@ -28,12 +28,10 @@ export class Popup implements Middleware<Context> {
             default:
                 if (
                     !hasNativeAPI &&
-                    context.providerType === ProviderType.MaskWallet &&
-                    isRiskPayload(context.request)
+                    isRiskPayload(context.request) &&
+                    context.providerType === ProviderType.MaskWallet
                 ) {
                     await WalletRPC.pushUnconfirmedRequest(context.request)
-                    context.end()
-                } else {
                 }
                 break
         }

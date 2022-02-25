@@ -26,7 +26,7 @@ export async function request<T extends unknown>(
                 if (!externalProvider?.request) throw new Error('Failed to create provider.')
 
                 // send request and set result in the context
-                const result = (await externalProvider?.request?.(requestArguments)) as T
+                const result = (await externalProvider?.request?.(context.requestArguments)) as T
                 context.write(result)
             } catch (error) {
                 context.abort(error, 'Failed to send request.')
